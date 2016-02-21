@@ -1,0 +1,29 @@
+﻿@{
+    Layout = null;
+    //Request.IsAuthenticated
+    //User.Identity.Name
+}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Web Presentation</title>
+    <meta name="description" content="An Easy Web Presentation.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @Styles.Render("~/Content/themes/main")
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        var _config = {
+            signUp: '@Url.Action("Register", "Account")',
+            signIn: '@Url.Action("Login", "Account")',
+            save: '@Url.Action("Save", "Presentation")',
+            get: '@Url.Action("Get", "Presentation")',
+
+            authenticated: '@Request.IsAuthenticated',
+            userName: '@User.Identity.Name'
+        };
+    </script>
+    @Scripts.Render("~/bundles/app")
+</body>
