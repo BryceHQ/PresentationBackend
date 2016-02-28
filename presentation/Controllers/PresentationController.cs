@@ -8,13 +8,14 @@ using WebMatrix.WebData;
 using presentation.Business.Models;
 using presentation.Business.Managers;
 using presentation.Business;
+using System.Data.Entity.Validation;
 
 namespace presentation.Controllers
 {
     public class PresentationController : Controller
     {
         [HttpPost]
-        public ActionResult Save(Presentation model)
+        public ActionResult New(Presentation model)
         {
             if (!Request.IsAuthenticated)
             {
@@ -26,6 +27,43 @@ namespace presentation.Controllers
             try
             {
                 PresentationManager.Instance.Add(model);
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public ActionResult Save()
+        {
+            if (!Request.IsAuthenticated)
+            {
+                return Json(NestedErrorCodes.NotAuthenticated);
+            }
+            int id = Helper.ToInt(Request["id"]);
+            string raw = Request["raw"].Trim();
+
+            var model = PresentationManager.Instance.Get(id);
+            model.Raw = raw;
+            try
+            {
+                PresentationManager.Instance.Update(model);
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    string.Format("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        string.Format("- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+                return Json(new { success = false, message = e.Message });
             }
             catch (Exception e)
             {

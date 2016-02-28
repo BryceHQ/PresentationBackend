@@ -35,6 +35,13 @@ namespace presentation.Business.Managers
             return result;
         }
 
+        public Presentation Update(Presentation presentation)
+        {
+            presentation.LastUpdateTime = DateTime.Now;
+            context.SaveChanges();
+            return presentation;
+        }
+
         public Presentation Remove(int id)
         {
             var presentation = context.Presentation.FirstOrDefault(a => a.UserId == id);
