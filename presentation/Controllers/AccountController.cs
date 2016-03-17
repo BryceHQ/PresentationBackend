@@ -9,13 +9,13 @@ using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
 using presentation.Filters;
-using presentation.Business.Models;
+using Business.Models;
 
 namespace presentation.Controllers
 {
     [Authorize]
     [InitializeSimpleMembership]
-    public class AccountController : Controller
+    public class AccountController : XController
     {
         //
         // GET: /Account/Login
@@ -267,7 +267,7 @@ namespace presentation.Controllers
             if (ModelState.IsValid)
             {
                 // 将新用户插入到数据库
-                using (UsersContext db = new UsersContext())
+                using (PresentationContext db = new PresentationContext())
                 {
                     UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
                     // 检查用户是否已存在

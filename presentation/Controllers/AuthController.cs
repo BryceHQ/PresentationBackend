@@ -12,12 +12,12 @@ namespace presentation.Controllers
     {
         public ActionResult SignIn()
         {
-            return RedirectToAction("Index", "Home");
+            return View("~/Views/Home/Index.cshtml");;
         }
 
         public ActionResult SignUp()
         {
-            return RedirectToAction("Index", "Home");
+            return View("~/Views/Home/Index.cshtml"); ;
         }
     }
 }

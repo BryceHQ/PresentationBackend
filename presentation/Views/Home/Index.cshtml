@@ -1,29 +1,32 @@
 ﻿@{
-    Layout = null;
-    //Request.IsAuthenticated
-    //User.Identity.Name
+    ViewBag.Title = "Web Presentation";
+    
+    bool flag = ViewBag.Raw != null;
 }
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Web Presentation</title>
-    <meta name="description" content="An Easy Web Presentation.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    @Styles.Render("~/Content/themes/main")
-</head>
-<body>
-    <div id="app"></div>
 
+@section Styles {
+    @Styles.Render("~/Content/themes/main")
+}
+
+<div id="app"></div>
+
+@section Scripts {
     <script>
         var _config = {
+            returnUrl: '@(flag ? ViewBag.returnUrl : "")',
+
             signUp: '@Url.Action("Register", "Account")',
             signIn: '@Url.Action("Login", "Account")',
+
+            add: '@Url.Action("Add", "Presentation")',
             save: '@Url.Action("Save", "Presentation")',
             get: '@Url.Action("Get", "Presentation")',
+            all: '@Url.Action("All", "Presentation")',
+            recent: '@Url.Action("Recent", "Presentation")',
 
-            authenticated: '@Request.IsAuthenticated',
-            userName: '@User.Identity.Name'
+            isAuthenticated: @(Request.IsAuthenticated ? "true" : "false"),
+            name: '@User.Identity.Name'
         };
     </script>
     @Scripts.Render("~/bundles/app")
-</body>
+}

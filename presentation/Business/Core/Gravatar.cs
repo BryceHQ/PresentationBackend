@@ -12,38 +12,48 @@ namespace presentation.Business.Core
 {
     public class Gravatar
     {
-        private int pixelSize = 16;
-        private int tiles = 5;
+        private int pixelSize = 15;
+        private int width = 6;
+        private int height = 6;
 
         public MemoryStream Render(string id)
         {
             byte[] hash = Hash(id);
 
             int length = hash.Length;
+            Brush[] brushes = new Brush[3];
+            for (int m = 0; m < 3; m++)
+            {
+                brushes[m] = new SolidBrush(
+                    Color.FromArgb(
+                        hash[length - 4 * m - 4],
+                        hash[length - 4 * m - 3],
+                        hash[length - 4 * m - 2],
+                        hash[length - 4 * m - 1]
+                    )
+                );
+            }
 
-            Color color = Color.FromArgb(hash[length - 3], hash[length - 2], hash[length - 1], 0);
-
-            int width = pixelSize * tiles;
-            int height = width;
+            int width = pixelSize * this.width;
+            int height = pixelSize * this.height;
             using (Image img = new Bitmap(width, height))
             {
                 MemoryStream stream = new MemoryStream();
-                
+
                 using (Graphics g = Graphics.FromImage(img))
                 {
                     //设置位图的背景颜色，默认是黑色
                     g.Clear(Color.White);
 
-                    var brush = new SolidBrush(color);
-
-                    bool[] flagArr = GetPixelFlag(hash);
-                    for (int i = 0; i < tiles; i++)
+                    int mid = this.width / 2;
+                    for (int i = 0; i < this.width; i++)
                     {
-                        for (int j = 0; j < tiles; j++)
+                        for (int j = 0; j < this.height; j++)
                         {
-                            if (flagArr[Reflact(i, j)])
+                            int col = i >= mid ? 2 * mid - 1 - i : i;
+                            if (Check(hash, col, j))
                             {
-                                g.FillRectangle(brush, i * pixelSize, j * pixelSize, pixelSize, pixelSize);
+                                g.FillRectangle(brushes[col], i * pixelSize, j * pixelSize, pixelSize, pixelSize);
                             }
                         }
                     }
@@ -73,26 +83,17 @@ namespace presentation.Business.Core
         }
 
         /// <summary>
-        /// 得到哈希值对应的格子图中每个格子是否不为空白的标志
+        /// 
         /// </summary>
         /// <param name="hashArray"></param>
         /// <returns></returns>
-        private static bool[] GetPixelFlag(byte[] hash)
+        private bool Check(byte[] hash, int x, int y)
         {
-            if (hash == null)
-            {
-                throw new ArgumentNullException("hashArray");
-            }
+            int index = y * this.width + x;
+            int row = index / 8;
+            int col = index - row * 8;
 
-            int length = hash.Length;
-            bool[] flagArr = new bool[length];
-
-            for (int i = 0; i < length; i++)
-            {
-                flagArr[i] = (hash[i] & 0x1) == 0;
-            }
-
-            return flagArr;
+            return (hash[row] & Convert.ToInt32(Math.Pow(2, col))) != 0;
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace presentation.Business.Core
         /// <returns></returns>
         private int Reflact(int x, int y)
         {
-            int mid = this.tiles / 2;
+            int mid = this.width / 2;
             if (x > mid)
             {
                 x = 2 * mid - x;

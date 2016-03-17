@@ -4,7 +4,8 @@ using System.Data.Entity.Infrastructure;
 using System.Threading;
 using System.Web.Mvc;
 using WebMatrix.WebData;
-using presentation.Business.Models;
+
+using Business.Models;
 
 namespace presentation.Filters
 {
@@ -25,11 +26,11 @@ namespace presentation.Filters
         {
             public SimpleMembershipInitializer()
             {
-                Database.SetInitializer<UsersContext>(null);
+                Database.SetInitializer<PresentationContext>(null);
 
                 try
                 {
-                    using (var context = new UsersContext())
+                    using (var context = new PresentationContext())
                     {
                         if (!context.Database.Exists())
                         {
