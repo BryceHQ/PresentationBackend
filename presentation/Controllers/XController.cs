@@ -13,15 +13,15 @@ namespace presentation.Controllers
 {
     public abstract class XController : Controller
     {
-        private UserProfile currentUser;
+        private User currentUser;
 
-        public UserProfile CurrentUser
+        public User CurrentUser
         {
             get
             {
                 if (currentUser == null)
                 {
-                    currentUser = AccountManager.Instance.FirstOrDefault(a => a.UserName == User.Identity.Name);
+                    currentUser = AccountManager.Instance.FirstOrDefault(a => a.Name == User.Identity.Name);
                 }
                 return currentUser;
             }

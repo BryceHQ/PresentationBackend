@@ -37,7 +37,7 @@ namespace presentation.Controllers
         {
             if (ModelState.IsValid && WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
             {
-                return Json(new { success = true, user = model.UserName });
+                return Json(model.UserName);
                 //return RedirectToLocal(returnUrl);
             }
 
@@ -81,9 +81,15 @@ namespace presentation.Controllers
                 // 尝试注册用户
             try
             {
-                WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
+                WebSecurity.CreateUserAndAccount(model.UserName, model.Password,
+                    new
+                    {
+                        NickName = model.UserName,
+                        CreateTime = DateTime.Now,
+                        LastUpdateTime = DateTime.Now
+                    });
                 var success = WebSecurity.Login(model.UserName, model.Password);
-                return Json(new { success = true, user = success ? model.UserName : User.Identity.Name });
+                return Json(User.Identity.Name);
                 //return RedirectToAction("Index", "Home");
             }
             catch (MembershipCreateUserException e)
@@ -269,12 +275,19 @@ namespace presentation.Controllers
                 // 将新用户插入到数据库
                 using (PresentationContext db = new PresentationContext())
                 {
-                    UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
+                    User user = db.User.FirstOrDefault(u => u.Name.ToLower() == model.UserName.ToLower());
                     // 检查用户是否已存在
                     if (user == null)
                     {
                         // 将名称插入到配置文件表
-                        db.UserProfiles.Add(new UserProfile { UserName = model.UserName });
+                        db.User.Add(
+                            new User { 
+                                Name = model.UserName,
+                                NickName = model.UserName,
+                                CreateTime = DateTime.Now,
+                                LastUpdateTime = DateTime.Now
+                            }
+                        );
                         db.SaveChanges();
 
                         OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);

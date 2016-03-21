@@ -5,19 +5,37 @@ using System.Data.Entity;
 
 namespace Business.Models
 {
-    [Table("UserProfile")]
-    public class UserProfile
+    [Table("User")]
+    public class User
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int UserId { get; set; }
-        public string UserName { get; set; }
+        public int Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string NickName { get; set; }
+
+        public string Description { get; set; }
+        
+        public string Icon { get; set; }
+
+        public string Email{ get; set; }
+
+        [Required]
+        public DateTime CreateTime { get; set; }
+        
+        [Required]
+        public DateTime LastUpdateTime { get; set; }
     }
+
+
 
     public class RegisterExternalLoginModel
     {
         [Required]
-        [Display(Name = "用户名")]
         public string UserName { get; set; }
 
         public string ExternalLoginData { get; set; }
@@ -27,32 +45,26 @@ namespace Business.Models
     {
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "当前密码")]
         public string OldPassword { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} 必须至少包含 {2} 个字符。", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "新密码")]
         public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "确认新密码")]
         public string ConfirmPassword { get; set; }
     }
 
     public class LoginModel
     {
         [Required]
-        [Display(Name = "用户名")]
         public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "密码")]
         public string Password { get; set; }
 
-        [Display(Name = "记住我?")]
         public bool RememberMe { get; set; }
     }
 

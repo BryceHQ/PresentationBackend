@@ -12,26 +12,27 @@ namespace Business.Models
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+       
+        [Required]
+        public string Guid { get; set; }
+        
+        [Required]
+        public int UserId { get; set; }
+        
+        [Required]
+        public int FolderId { get; set; }
+       
         [Required]
         public string Name { get; set; }
-        public int UserId { get; set; }
+
+        [Required]
         [MaxLength]
         public string Raw { get; set; }
+
+        [Required]
         public DateTime CreateTime { get; set; }
+       
+        [Required]
         public DateTime LastUpdateTime { get; set; }
     }
-
-    [Table("History")]
-    public class History
-    {
-        [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        public int PresentationId { get; set; }
-        [MaxLength]
-        public string Raw { get; set; }
-        public DateTime CreateTime { get; set; }
-        public DateTime LastUpdateTime { get; set; }
-    }
-
 }

@@ -8,7 +8,6 @@ using Core;
 using Business;
 using Business.Models;
 using Business.Managers;
-using System.Data.Entity.Validation;
 
 namespace presentation.Controllers
 {
@@ -31,19 +30,17 @@ namespace presentation.Controllers
             var model = new Presentation()
             {
                 Name = defaultName,
-                UserId = this.CurrentUser.UserId,
-                Raw = defaultRaw
+                UserId = this.CurrentUser.Id,
+                Raw = defaultRaw,
+                FolderId = folderId
             };
 
-            try
+            var returnValue = PresentationManager.Instance.Add(model);
+            if (!returnValue.Successed)
             {
-                var result = PresentationManager.Instance.Add(model);
-                return Json(result.Id);
+                return Json(returnValue.ErrorCode);
             }
-            catch (Exception e)
-            {
-                return Json(new ErrorCode(e.Message));
-            }
+            return Json(returnValue.Value.Id);
         }
 
         [HttpPost]
@@ -63,37 +60,26 @@ namespace presentation.Controllers
             {
                 return Json(new ErrorCode("当前文件不存在"));
             }
-            if (!string.IsNullOrWhiteSpace(raw)) 
-            {
-                model.Raw = raw;
-            }
+
             if (!string.IsNullOrWhiteSpace(name))
             {
                 model.Name = name;
             }
-            try
+
+            ReturnValue<Presentation> returnValue;
+            if (string.IsNullOrWhiteSpace(raw))
             {
-                PresentationManager.Instance.Update(model);
+                returnValue = PresentationManager.Instance.Update(model);
             }
-            catch (DbEntityValidationException e)
+            else
             {
-                foreach (var eve in e.EntityValidationErrors)
-                {
-                    string.Format("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                    foreach (var ve in eve.ValidationErrors)
-                    {
-                        string.Format("- Property: \"{0}\", Error: \"{1}\"",
-                            ve.PropertyName, ve.ErrorMessage);
-                    }
-                }
-                return Json(new ErrorCode(e.Message));
+                returnValue = PresentationManager.Instance.SaveWithHistory(raw, model);
             }
-            catch (Exception e)
+            if (!returnValue.Successed)
             {
-                return Json(new ErrorCode(e.Message));
+                return Json(returnValue.ErrorCode);
             }
-            return Json(new { success = true });
+            return Json(string.Empty);
         }
 
         public ActionResult Get()
@@ -104,7 +90,7 @@ namespace presentation.Controllers
             }
 
             int id = Helper.ToInt(Request["id"]);
-            var user = AccountManager.Instance.FirstOrDefault(a => a.UserName == User.Identity.Name);
+            var user = AccountManager.Instance.FirstOrDefault(a => a.Name == User.Identity.Name);
             var result = PresentationManager.Instance.FirstOrDefault(p => p.Id == id);
 
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -117,7 +103,7 @@ namespace presentation.Controllers
                 return Json(NestedErrorCodes.NotAuthenticated);
             }
 
-            var result = PresentationManager.Instance.Where(p => p.UserId == this.CurrentUser.UserId);
+            var result = PresentationManager.Instance.Where(p => p.UserId == this.CurrentUser.Id);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -129,8 +115,10 @@ namespace presentation.Controllers
                 return Json(NestedErrorCodes.NotAuthenticated);
             }
 
-            var user = AccountManager.Instance.FirstOrDefault(a => a.UserName == User.Identity.Name);
-            var result = PresentationManager.Instance.Where(p => p.UserId == user.UserId);
+            var user = AccountManager.Instance.FirstOrDefault(a => a.Name == User.Identity.Name);
+            var result = PresentationManager.Instance.Where(p => p.UserId == user.Id)
+                .OrderByDescending(p => p.LastUpdateTime)
+                .Take(5);
 
             return Json(result , JsonRequestBehavior.AllowGet);
         }

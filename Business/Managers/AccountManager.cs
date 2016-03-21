@@ -26,35 +26,37 @@ namespace Business.Managers
 
         }
 
-        public UserProfile Add(UserProfile user)
+        public User Add(User user)
         {
-            return context.UserProfiles.Add(user);
+            user.NickName = user.Name;
+            //user.Icon = user.
+            return context.User.Add(user);
         }
 
-        public UserProfile Remove(int id)
+        public User Remove(int id)
         {
-            var user = context.UserProfiles.FirstOrDefault(a => a.UserId == id);
-            return context.UserProfiles.Remove(user);
+            var user = context.User.FirstOrDefault(a => a.Id == id);
+            return context.User.Remove(user);
         }
 
-        public UserProfile Get(int id)
+        public User Get(int id)
         {
-            return context.UserProfiles.FirstOrDefault(a => a.UserId == id);
+            return context.User.FirstOrDefault(a => a.Id == id);
         }
 
-        public UserProfile[] Where(Func<UserProfile, bool> predicate)
+        public User[] Where(Func<User, bool> predicate)
         {
-            return context.UserProfiles.Where(predicate).ToArray();
+            return context.User.Where(predicate).ToArray();
         }
 
-        public UserProfile FirstOrDefault(Func<UserProfile, bool> predicate)
+        public User FirstOrDefault(Func<User, bool> predicate)
         {
-            return context.UserProfiles.FirstOrDefault(predicate);
+            return context.User.FirstOrDefault(predicate);
         }
 
-        public UserProfile[] All()
+        public User[] All()
         {
-            return context.UserProfiles.ToArray();
+            return context.User.ToArray();
         }
     }
 }
