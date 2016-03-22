@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 
 using Business.Models;
+using Core;
 
 namespace Business.Managers
 {
@@ -26,18 +27,77 @@ namespace Business.Managers
 
         }
 
-        public User Add(User user)
+
+        #region Add
+        public ReturnValue<User> Add(User model)
         {
-            user.NickName = user.Name;
-            //user.Icon = user.
-            return context.User.Add(user);
+            return this.Add(model, true);
         }
 
-        public User Remove(int id)
+        public ReturnValue<User> Add(User model, bool saveChanges)
         {
-            var user = context.User.FirstOrDefault(a => a.Id == id);
-            return context.User.Remove(user);
+            return this.InternalAdd(this.context, model, saveChanges);
         }
+
+        internal ReturnValue<User> InternalAdd(PresentationContext context, User model, bool saveChanges)
+        {
+            model.NickName = model.Name;
+            model.LastUpdateTime = DateTime.Now;
+            model.CreateTime = DateTime.Now;
+            var result = context.User.Add(model);
+            ErrorCode error = null;
+            if (saveChanges)
+            {
+                error = context.SafeSaveChanges();
+            }
+            return new ReturnValue<User>(result, error);
+        } 
+        #endregion
+
+
+        #region Update
+        public ReturnValue<User> Update(User model)
+        {
+            return this.Update(model, true);
+        }
+
+        public ReturnValue<User> Update(User model, bool saveChanges)
+        {
+            return this.InternalUpdate(this.context, model, saveChanges);
+        }
+
+        internal ReturnValue<User> InternalUpdate(PresentationContext context, User model, bool saveChanges)
+        {
+            model.LastUpdateTime = DateTime.Now;
+            ErrorCode error = null;
+            if (saveChanges)
+            {
+                error = context.SafeSaveChanges();
+            }
+            return new ReturnValue<User>(model, error);
+        }
+        #endregion
+
+
+        #region Remove
+        public ReturnValue<User> Remove(int id)
+        {
+            return this.Remove(id, true);
+        }
+
+        public ReturnValue<User> Remove(int id, bool saveChanges)
+        {
+            var presentation = context.User.FirstOrDefault(a => a.Id == id);
+            var result = context.User.Remove(presentation);
+            ErrorCode error = null;
+            if (saveChanges)
+            {
+                error = context.SafeSaveChanges();
+            }
+            return new ReturnValue<User>(result, error);
+        }
+        #endregion
+
 
         public User Get(int id)
         {

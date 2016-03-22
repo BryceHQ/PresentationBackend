@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 
 using Business.Models;
+using Core;
 
 namespace Business.Managers
 {
@@ -27,70 +28,73 @@ namespace Business.Managers
 
 
         #region Add
-        public Folder Add(Folder model)
+        public ReturnValue<Folder> Add(Folder model)
         {
             return this.Add(model, true);
         }
 
-        public Folder Add(Folder model, bool saveChanges)
+        public ReturnValue<Folder> Add(Folder model, bool saveChanges)
         {
             return this.InternalAdd(this.context, model, saveChanges);
         }
 
-        internal Folder InternalAdd(PresentationContext context, Folder model, bool saveChanges)
+        internal ReturnValue<Folder> InternalAdd(PresentationContext context, Folder model, bool saveChanges)
         {
             model.Guid = Guid.NewGuid().ToString();
             model.CreateTime = DateTime.Now;
             model.LastUpdateTime = DateTime.Now;
 
             var result = context.Folder.Add(model);
+            ErrorCode error = null;
             if (saveChanges)
             {
-                context.SaveChanges();
+                error = context.SafeSaveChanges();
             }
-            return result;
+            return new ReturnValue<Folder>(result, error);
         }
         #endregion
 
 
         #region Update
-        public Folder Update(Folder model)
+        public ReturnValue<Folder> Update(Folder model)
         {
             return this.Update(model, true);
         }
 
-        public Folder Update(Folder model, bool saveChanges)
+        public ReturnValue<Folder> Update(Folder model, bool saveChanges)
         {
             return this.InternalUpdate(this.context, model, saveChanges);
         }
 
-        internal Folder InternalUpdate(PresentationContext context, Folder model, bool saveChanges)
+        internal ReturnValue<Folder> InternalUpdate(PresentationContext context, Folder model, bool saveChanges)
         {
             model.LastUpdateTime = DateTime.Now;
+            ErrorCode error = null;
             if (saveChanges)
             {
-                context.SaveChanges();
+                error = context.SafeSaveChanges();
             }
-            return model;
+            return new ReturnValue<Folder>(model, error);
         }
         #endregion
 
 
         #region Remove
-        public Folder Remove(int id)
+        public ReturnValue<Folder> Remove(int id)
         {
             return this.Remove(id, true);
         }
 
-        public Folder Remove(int id, bool saveChanges)
+        public ReturnValue<Folder> Remove(int id, bool saveChanges)
         {
             var model = context.Folder.FirstOrDefault(a => a.Id == id);
             var result = context.Folder.Remove(model);
+            ErrorCode error = null;
             if (saveChanges)
             {
-                context.SaveChanges();
+                error = context.SafeSaveChanges();
             }
-            return result;
+            return new ReturnValue<Folder>(result, error);
         }
         #endregion
 

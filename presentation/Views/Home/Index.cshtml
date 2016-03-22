@@ -1,7 +1,15 @@
 ﻿@{
     ViewBag.Title = "Web Presentation";
-    
-    bool flag = ViewBag.Raw != null;
+
+    var user = ViewBag.User;
+    var id = 0;
+    var name = string.Empty;
+    var description = string.Empty;
+    if(user != null){
+        id = user.Id;
+        name = user.Name;
+        description = user.Description;
+    }
 }
 
 @section Styles {
@@ -13,19 +21,23 @@
 @section Scripts {
     <script>
         var _config = {
-            returnUrl: '@(flag ? ViewBag.returnUrl : "")',
+            user: {
+                id: @id,
+                name: '@name',
+                description: '@description',
+                isAuthenticated: @(Request.IsAuthenticated ? "true" : "false"),
+                
+                signUp: '@Url.Action("Register", "Account")',
+                signIn: '@Url.Action("Login", "Account")',
+                save: '@Url.Action("Update", "Account")',
+            },
 
-            signUp: '@Url.Action("Register", "Account")',
-            signIn: '@Url.Action("Login", "Account")',
 
             add: '@Url.Action("Add", "Presentation")',
             save: '@Url.Action("Save", "Presentation")',
             get: '@Url.Action("Get", "Presentation")',
             all: '@Url.Action("All", "Presentation")',
             recent: '@Url.Action("Recent", "Presentation")',
-
-            isAuthenticated: @(Request.IsAuthenticated ? "true" : "false"),
-            name: '@User.Identity.Name'
         };
     </script>
     @Scripts.Render("~/bundles/app")

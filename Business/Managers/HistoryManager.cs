@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 
 using Business.Models;
+using Core;
 
 namespace Business.Managers
 {
@@ -28,76 +29,78 @@ namespace Business.Managers
 
 
         #region Add
-        public History Add(History model)
+        public ReturnValue<History> Add(History model)
         {
             return this.Add(model, true);
         }
 
-        public History Add(History model, bool saveChanges)
+        public ReturnValue<History> Add(History model, bool saveChanges)
         {
             return this.InternalAdd(this.context, model, saveChanges);
         }
 
-        internal History InternalAdd(PresentationContext context, History model, bool saveChanges)
+        internal ReturnValue<History> InternalAdd(PresentationContext context, History model, bool saveChanges)
         {
             model.Guid = Guid.NewGuid().ToString();
             model.CreateTime = DateTime.Now;
             model.LastUpdateTime = DateTime.Now;
 
             var result = context.History.Add(model);
+            ErrorCode error = null;
             if (saveChanges)
             {
-                context.SaveChanges();
+                error = context.SafeSaveChanges();
             }
-
-            return result;
+            return new ReturnValue<History>(result, error);
         } 
         #endregion
 
         
         #region Update
-        public History Update(History model)
+        public ReturnValue<History> Update(History model)
         {
             return this.Update(model, true);
         }
 
-        public History Update(History model, bool saveChanges)
+        public ReturnValue<History> Update(History model, bool saveChanges)
         {
             return this.InternalUpdate(this.context, model, saveChanges);
         }
 
-        internal History InternalUpdate(PresentationContext context, History model, bool saveChanges)
+        internal ReturnValue<History> InternalUpdate(PresentationContext context, History model, bool saveChanges)
         {
             model.LastUpdateTime = DateTime.Now;
+            ErrorCode error = null;
             if (saveChanges)
             {
-                context.SaveChanges();
+                error = context.SafeSaveChanges();
             }
-            return model;
+            return new ReturnValue<History>(model, error);
         }
         #endregion
 
 
         #region Remove
-        public History Remove(int id)
+        public ReturnValue<History> Remove(int id)
         {
             return this.Remove(id, true);
         }
 
-        public History Remove(int id, bool saveChanges)
+        public ReturnValue<History> Remove(int id, bool saveChanges)
         {
             return this.InternalRemove(this.context, id, saveChanges);
         }
-        
-        public History InternalRemove(PresentationContext context, int id, bool saveChanges)
+
+        public ReturnValue<History> InternalRemove(PresentationContext context, int id, bool saveChanges)
         {
             var model = context.History.FirstOrDefault(a => a.Id == id);
             var result = context.History.Remove(model);
+            ErrorCode error = null;
             if (saveChanges)
             {
-                context.SaveChanges();
+                error = context.SafeSaveChanges();
             }
-            return result;
+            return new ReturnValue<History>(result, error);
         } 
         #endregion
 

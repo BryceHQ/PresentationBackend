@@ -15,13 +15,9 @@ namespace presentation.Controllers
         {
             if (Request.IsAuthenticated)
             {
-                //var user = AccountManager.Instance.FirstOrDefault(a => a.UserName == User.Identity.Name);
-                //var last = PresentationManager.Instance.Where(a => a.UserId == user.UserId)
-                //    .OrderBy(a => a.LastUpdateTime).First();
-                //if (last != null)
-                //{
-                //    ViewBag.Raw = last;
-                //}    
+                var user = AccountManager.Instance.FirstOrDefault(a => a.Name == User.Identity.Name);
+
+                ViewBag.User = user;
                 ViewBag.returnUrl = "/home";
             }
             else

@@ -10,6 +10,9 @@ using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
 using presentation.Filters;
 using Business.Models;
+using Business;
+using Core;
+using Business.Managers;
 
 namespace presentation.Controllers
 {
@@ -37,7 +40,8 @@ namespace presentation.Controllers
         {
             if (ModelState.IsValid && WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
             {
-                return Json(model.UserName);
+                var user = AccountManager.Instance.FirstOrDefault(a => a.Name == User.Identity.Name);
+                return Json(user);
                 //return RedirectToLocal(returnUrl);
             }
 
@@ -89,7 +93,9 @@ namespace presentation.Controllers
                         LastUpdateTime = DateTime.Now
                     });
                 var success = WebSecurity.Login(model.UserName, model.Password);
-                return Json(User.Identity.Name);
+                var user = AccountManager.Instance.FirstOrDefault(a => a.Name == User.Identity.Name);
+
+                return Json(user);
                 //return RedirectToAction("Index", "Home");
             }
             catch (MembershipCreateUserException e)
@@ -343,6 +349,41 @@ namespace presentation.Controllers
 
             ViewBag.ShowRemoveButton = externalLogins.Count > 1 || OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
             return PartialView("_RemoveExternalLoginsPartial", externalLogins);
+        }
+
+        public ActionResult Update() 
+        {
+            if (!Request.IsAuthenticated)
+            {
+                return Json(NestedErrorCodes.NotAuthenticated);
+            }
+
+            int id = Helper.ToInt(Request["id"]);
+            string name = Helper.Trim(Request["name"]);
+            string description = Helper.Trim(Request["description"]);
+
+            var model = AccountManager.Instance.Get(id);
+            if (model == null)
+            {
+                return Json(new ErrorCode(string.Format("id 为 {0} 用户不存在", id)));
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                model.Name = name;
+            }
+
+            ReturnValue<User> returnValue;
+            if (!string.IsNullOrEmpty(description))
+            {
+                model.Description = description;
+            }
+            returnValue = AccountManager.Instance.Update(model);
+            if (!returnValue.Successed)
+            {
+                return Json(returnValue.ErrorCode);
+            }
+            return Json(string.Empty);
         }
 
         #region 帮助程序
