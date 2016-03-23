@@ -7,8 +7,8 @@
     var description = string.Empty;
     if(user != null){
         id = user.Id;
-        name = user.Name;
-        description = user.Description;
+        name = user.Name.Replace("'", "\\'");
+        description = user.Description.Replace("'", "\\'");
     }
 }
 
@@ -23,8 +23,8 @@
         var _config = {
             user: {
                 id: @id,
-                name: '@name',
-                description: '@description',
+                name: '@Html.Raw(name)',
+                description: '@Html.Raw(description)',
                 isAuthenticated: @(Request.IsAuthenticated ? "true" : "false"),
                 
                 signUp: '@Url.Action("Register", "Account")',
@@ -38,6 +38,7 @@
             get: '@Url.Action("Get", "Presentation")',
             all: '@Url.Action("All", "Presentation")',
             recent: '@Url.Action("Recent", "Presentation")',
+            history: '@Url.Action("All", "History")',
         };
     </script>
     @Scripts.Render("~/bundles/app")

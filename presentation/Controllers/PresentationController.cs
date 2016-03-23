@@ -58,7 +58,7 @@ namespace presentation.Controllers
             var model = PresentationManager.Instance.Get(id);
             if (model == null)
             {
-                return Json(new ErrorCode(string.Format("id 为 {0} 历史记录不存在", id)));
+                return Json(new ErrorCode(string.Format("id 为 {0} 文件不存在", id)));
             }
 
             if (!string.IsNullOrWhiteSpace(name))

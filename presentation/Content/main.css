@@ -633,6 +633,9 @@ a {
   position: absolute;
   text-align: center;
 }
+.align-center {
+  text-align: center;
+}
 .button {
   -webkit-user-select: none;
   -moz-user-select: none;
