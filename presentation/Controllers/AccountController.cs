@@ -100,7 +100,7 @@ namespace presentation.Controllers
             }
             catch (MembershipCreateUserException e)
             {
-                return Json(new { success = false, message = ErrorCodeToString(e.StatusCode) });
+                return Json(new { Success = false, Message = ErrorCodeToString(e.StatusCode) });
                 //ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
             }
             //}

@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorCode.cs" />
+    <Compile Include="Utility\AttachmentUtility.cs" />
     <Compile Include="Managers\AccountManager.cs" />
     <Compile Include="Managers\HistoryManager.cs" />
+    <Compile Include="Managers\AttachmentManager.cs" />
     <Compile Include="Managers\PresentationManager.cs" />
     <Compile Include="Managers\FolderManager.cs" />
     <Compile Include="Models\Account.cs" />

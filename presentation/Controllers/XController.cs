@@ -68,7 +68,7 @@ namespace presentation.Controllers
 
         protected JsonResult Json(ErrorCode errorCode)
         {
-            return Json(new { success = false, code = errorCode.Code, message = errorCode.Description });
+            return Json(new { Success = false, Code = errorCode.Code, Message = errorCode.Description });
         }
 
         private class XJsonResult : JsonResult
@@ -121,10 +121,12 @@ namespace presentation.Controllers
                     //}
                     //response.Write(serializer.Serialize(Data));
 
-                    response.Write(JsonConvert.SerializeObject(
+                    response.Write(
+                        JsonConvert.SerializeObject(
                             Data,
                             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings
-                        ));
+                        )
+                    );
                 }
             }
         }
