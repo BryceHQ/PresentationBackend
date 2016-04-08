@@ -7,14 +7,35 @@ using System.Security.Cryptography;
 
 namespace Web.Core
 {
-    class Gravatar
+    public class Gravatar
     {
-        private int pixelSize = 15;
-        private int width = 6;
-        private int height = 6;
+        private int _pixelSize = 15;
+        private int _width = 6;
+        private int _height = 6;
 
-        public MemoryStream Render(string id)
+        private static Gravatar _default = new Gravatar();
+
+        /// <summary>
+        /// 默认的Gravatar
+        /// </summary>
+        public static Gravatar Default
         {
+            get
+            {
+                return _default;
+            }
+        }
+
+        public Stream Render(string id, Stream stream)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentNullException("id");
+            }
+            if(stream == null)
+            {
+                stream = new MemoryStream();
+            }
             byte[] hash = Hash(id);
 
             int length = hash.Length;
@@ -31,26 +52,24 @@ namespace Web.Core
                 );
             }
 
-            int width = pixelSize * this.width;
-            int height = pixelSize * this.height;
+            int width = _pixelSize * this._width;
+            int height = _pixelSize * this._height;
             using (Image img = new Bitmap(width, height))
             {
-                MemoryStream stream = new MemoryStream();
-
                 using (Graphics g = Graphics.FromImage(img))
                 {
                     //设置位图的背景颜色，默认是黑色
                     g.Clear(Color.White);
 
-                    int mid = this.width / 2;
-                    for (int i = 0; i < this.width; i++)
+                    int mid = this._width / 2;
+                    for (int i = 0; i < this._width; i++)
                     {
-                        for (int j = 0; j < this.height; j++)
+                        for (int j = 0; j < this._height; j++)
                         {
                             int col = i >= mid ? 2 * mid - 1 - i : i;
                             if (Check(hash, col, j))
                             {
-                                g.FillRectangle(brushes[col], i * pixelSize, j * pixelSize, pixelSize, pixelSize);
+                                g.FillRectangle(brushes[col], i * _pixelSize, j * _pixelSize, _pixelSize, _pixelSize);
                             }
                         }
                     }
@@ -80,13 +99,13 @@ namespace Web.Core
         }
 
         /// <summary>
-        /// 
+        /// 判断某一坐标位置处是否有内容
         /// </summary>
         /// <param name="hashArray"></param>
         /// <returns></returns>
         private bool Check(byte[] hash, int x, int y)
         {
-            int index = y * this.width + x;
+            int index = y * this._width + x;
             int row = index / 8;
             int col = index - row * 8;
 
@@ -101,7 +120,7 @@ namespace Web.Core
         /// <returns></returns>
         private int Reflact(int x, int y)
         {
-            int mid = this.width / 2;
+            int mid = this._width / 2;
             if (x > mid)
             {
                 x = 2 * mid - x;

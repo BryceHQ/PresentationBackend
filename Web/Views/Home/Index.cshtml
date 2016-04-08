@@ -5,6 +5,7 @@
     var id = string.Empty;
     var name = string.Empty;
     var description = string.Empty;
+    var icon = user.Icon ?? string.Empty;
     if (user != null)
     {
         id = user.Id;
@@ -29,6 +30,7 @@
                 id: '@id',
                 name: '@Html.Raw(name)',
                 description: '@Html.Raw(description)',
+                icon: '@Html.Raw(icon)',
                 isAuthenticated: @(Request.IsAuthenticated ? "true" : "false"),
 
                 signUp: '@Url.Action("Register", "Account")',

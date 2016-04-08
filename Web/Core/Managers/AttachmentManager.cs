@@ -129,7 +129,7 @@ namespace Web.Core
 
         #region Others
 
-        public async Task<string> UploadAttachment(string fileName, string userId, Stream stream)
+        public async Task<IAsyncResult<Attachment>> UploadAttachment(string fileName, string userId, Stream stream)
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -160,13 +160,49 @@ namespace Web.Core
             {
                 Name = fileName,
                 FileName = guidName,
-                FilePath = secondFolder,
+                FilePath = Path.Combine(folder, secondFolder),
                 UploadUser = userId
             };
 
-            await this.Add(attachment);
-            return string.Format("/presentation/{0}/{1}/{2}", folder, secondFolder, guidName).Replace('\\', '/');
+            return await this.Add(attachment);
         }
+
+
+        public async Task<IAsyncResult<Attachment>> GenerateIdentityIcon(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException(userId);
+            }
+            var fileName = userId + ".jpg";
+
+            string folder = (string)GlobalConfiguration.Configuration.Properties.GetOrAdd("uploadFolder", "upload"); ;
+            //文件路径
+            string saveDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folder);
+
+            //生成唯一文件名称
+            string guidName = Guid.NewGuid().ToString() + fileName.Substring(fileName.LastIndexOf('.'));
+
+            string secondFolder = AttachmentUtility.GetAttachmentSaveFolder(saveDir);
+
+            string saveName = Path.Combine(saveDir, secondFolder, guidName);
+
+            using (FileStream fs = new FileStream(saveName, FileMode.Create, FileAccess.ReadWrite))
+            {
+                Gravatar.Default.Render(userId, fs);
+            }
+
+            Attachment attachment = new Attachment()
+            {
+                Name = fileName,
+                FileName = guidName,
+                FilePath = Path.Combine(folder, secondFolder),
+                UploadUser = userId
+            };
+
+            return await this.Add(attachment);
+        }
+
         #endregion
     }
 }

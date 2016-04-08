@@ -164,8 +164,8 @@ namespace Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Email};
-                
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Email};           
+
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -179,6 +179,20 @@ namespace Web.Controllers
 
                     this.ResetUser();
 
+                    try
+                    {
+                        var updateResult = await this.GenerateIdentityIcon(user);
+                        if (!updateResult.Succeeded)
+                        {
+
+                        }
+                    }
+                    catch(Exception)
+                    {
+                        //生成头像出错，不影响用户注册成功
+                        //return Json(NestedErrorCodes.GenerateIdentityIconError);
+                    }
+
                     return Json(user);
 
                     // return RedirectToAction("Index", "Home");
@@ -188,6 +202,18 @@ namespace Web.Controllers
 
             //出错，将ModelState中的错误信息以Json返回
             return Json();
+        }
+
+        private async Task<IdentityResult> GenerateIdentityIcon(ApplicationUser user)
+        {
+            //生成用户头像
+            var iconResult = await AttachmentManager.Instance.GenerateIdentityIcon(user.Id);//
+            if (!iconResult.Succeeded)
+            {
+                return new IdentityResult(NestedErrorCodes.GenerateIdentityIconError.Description);
+            }
+            user.Icon = iconResult.Value.Url;
+            return await UserManager.UpdateAsync(user);
         }
 
         //

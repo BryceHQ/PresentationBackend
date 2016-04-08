@@ -31,10 +31,12 @@ namespace Web.Controllers
                 {
                     fileName = fileName.Substring(index + 1);
                 }
-                var url = await AttachmentManager.Instance.UploadAttachment(fileName, this.CurrentUser.Id, stream);//
-
-                //Attachment result = retValue.Value;
-                return Json(url);
+                var result = await AttachmentManager.Instance.UploadAttachment(fileName, this.CurrentUser.Id, stream);//
+                if (!result.Succeeded)
+                {
+                    return Json(result.Errors);
+                }
+                return Json(result.Value.Url);
             }
             catch (Exception e)
             {
