@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Web Presentation";
+
+    var user = ViewBag.User;
+    var id = string.Empty;
+    var name = string.Empty;
+    var description = string.Empty;
+    if (user != null)
+    {
+        id = user.Id;
+        name = user.Name.Replace("'", "\\'");
+        if(user.Description != null)
+        {
+            description = user.Description.Replace("'", "\\'");
+        }
+    }
+}
+
+@section Styles {
+    @Styles.Render("~/Content/themes/main")
+}
+
+<div id="app"></div>
+
+@section Scripts {
+    <script>
+        var _config = {
+            user: {
+                id: '@id',
+                name: '@Html.Raw(name)',
+                description: '@Html.Raw(description)',
+                isAuthenticated: @(Request.IsAuthenticated ? "true" : "false"),
+
+                signUp: '@Url.Action("Register", "Account")',
+                signIn: '@Url.Action("Login", "Account")',
+                save: '@Url.Action("Update", "Account")',
+            },
+
+
+            add: '@Url.Action("Add", "Presentation")',
+            save: '@Url.Action("Save", "Presentation")',
+            get: '@Url.Action("Get", "Presentation")',
+            all: '@Url.Action("All", "Presentation")',
+            recent: '@Url.Action("Recent", "Presentation")',
+            history: '@Url.Action("All", "History")',
+            upload: '@Url.Action("Upload", "Attachment")'
+        };
+    </script>
+    @Scripts.Render("~/bundles/app")
+}
