@@ -91,7 +91,7 @@ namespace Web.Controllers
             {
                 case SignInStatus.Success:
                     this.ResetUser();
-                    return Json(this.CurrentUser);
+                    return Json(await UserManager.FindByEmailAsync(model.Email));
                 case SignInStatus.LockedOut:
                     return JsonError("多次输入错误密码，当前用户已锁定。");
                 case SignInStatus.RequiresVerification:
@@ -432,11 +432,12 @@ namespace Web.Controllers
         //
         // POST: /Account/LogOff
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return Json(string.Empty);
+            //return RedirectToAction("Index", "Home");
         }
 
         //
