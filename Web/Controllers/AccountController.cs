@@ -76,12 +76,11 @@ namespace Web.Controllers
         //
         // POST: /Account/Login
         [HttpPost]
-        [AllowAnonymous]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid)
             {
-                return Json();
+                return Json(); 
             }
 
             // 这不会计入到为执行帐户锁定而统计的登录失败次数中

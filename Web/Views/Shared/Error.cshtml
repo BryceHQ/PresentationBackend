@@ -1,9 +1,14 @@
-﻿@model System.Web.Mvc.HandleErrorInfo
+﻿@* 不使用 *@
+
+@model System.Web.Mvc.HandleErrorInfo
 
 @{
-    ViewBag.Title = "Error";
+    ViewBag.Title = "未知的错误";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<h2>糟糕，发生了未知的错误</h2>
+
+@*<p>@Model.ActionName</p>
+<p>@Model.ControllerName</p>
+<p>@Model.Exception.Message</p>*@
 

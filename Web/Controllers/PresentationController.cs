@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -84,12 +85,15 @@ namespace Web.Controllers
             return Json(string.Empty);
         }
 
+        [Authorize]
         public async Task<ActionResult> Get()
         {
             if (!Request.IsAuthenticated)
             {
                 return Json(NestedErrorCodes.NotAuthenticated, JsonRequestBehavior.AllowGet);
             }
+            throw new Exception("this is custom error");
+
 
             int id = Helper.ToInt(Request["id"]);
             var result = await PresentationManager.Instance.FirstOrDefault(p => p.Id == id);

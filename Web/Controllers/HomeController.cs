@@ -21,5 +21,13 @@ namespace Web.Controllers
             }
             return View();
         }
+
+        //
+        // GET: /Error/PageNotFound
+        public ActionResult PageNotFound()
+        {
+            Response.StatusCode = 404;
+            return View();
+        }
     }
 }
