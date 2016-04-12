@@ -28,6 +28,12 @@ namespace Web.Core
         [StringLength(256)]
         public string Background { get; set; }
 
+        /// <summary>
+        /// 背景显示效果
+        /// </summary>
+        [StringLength(30)]
+        public string Duang{ get; set; }
+
         [Required]
         public string Raw { get; set; }
 

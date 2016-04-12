@@ -11,7 +11,8 @@ namespace Web.Controllers
     public class PresentationController : XController
     {
         private string _defaultName = "未命名";
-        private string _defaultRaw = "[{\"transition\":\"zoom\",\"content\":\"# 请输入标题\", \"key\":\"1\"}]";
+        private string _defaultDuang = "gradient left";
+        private string _defaultRaw = "[{\"transition\":\"fade\",\"content\":\"# 请输入标题\", \"key\":\"1\"}]";
 
         [HttpPost]
         public async Task<ActionResult> Add()
@@ -29,7 +30,8 @@ namespace Web.Controllers
                 Name = _defaultName,
                 UserId = this.CurrentUser.Id,
                 Raw = _defaultRaw,
-                FolderId = folderId
+                FolderId = folderId,
+                Duang = _defaultDuang
             };
 
             var result = await PresentationManager.Instance.Add(model);
@@ -92,7 +94,6 @@ namespace Web.Controllers
             {
                 return Json(NestedErrorCodes.NotAuthenticated, JsonRequestBehavior.AllowGet);
             }
-            throw new Exception("this is custom error");
 
 
             int id = Helper.ToInt(Request["id"]);
